@@ -1,0 +1,81 @@
+---
+- name: Update and run all docker services
+  hosts: jordan-hatcher.com
+
+  tasks:
+    - name: Update and run the nginx-proxy container
+      tags:
+        - nginx-proxy
+      docker_container:
+        name: nginx-proxy
+        image: jwilder/nginx-proxy
+        pull: yes
+        recreate: yes
+        restart_policy: always
+        ports:
+          - '80:80'
+          - '443:443'
+        volumes:
+          - /etc/letsencrypt/live/certs:/etc/nginx/certs
+          - /var/run/docker.sock:/tmp/docker.sock:ro
+        network_mode: bridge
+
+    - name: Update and run the gitea container
+      tags:
+        - gitea
+      docker_container:
+        name: gitea
+        image: gitea/gitea:latest
+        pull: yes
+        recreate: yes
+        restart_policy: always
+        env:
+          USER_UID: 1000
+          USER_GID: 1000
+          HTTP_PORT: 3000
+          VIRTUAL_HOST: git.jordan-hatcher.com
+          VIRTUAL_PORT: 3000
+        expose:
+          - 3000
+        ports:
+          - '222:22'
+        volumes:
+          - gitea:/data
+          - /etc/letsencrypt/live/certs/jordan-hatcher.com.crt:/certs/jordan-hatcher.com.crt
+          - /etc/letsencrypt/live/certs/jordan-hatcher.com.key:/certs/jordan-hatcher.com.key
+        network_mode: bridge
+
+    - name: Start github webhook listener for the jordan-hatcher.com
+      tags:
+        - jordan-hatcher.com
+      docker_container:
+        name: jordan-hatcher-listener
+        image: listener:latest
+        restart_policy: always
+        expose:
+          - 80
+        env:
+          VIRTUAL_HOST: webhook.jordan-hatcher.com
+        volumes:
+          - /home/jordan/storage/listener-config/config.json:/src/config.json
+          - website-data:/data
+        network_mode: bridge
+
+    - name: Run website container for jordan-hatcher.com
+      tags:
+        - jordan-hatcher.com
+      docker_container:
+        name: jordan-hatcher.com
+        image: latest-hugo:latest
+        restart_policy: always
+        expose:
+          - 80
+        env:
+          VIRTUAL_HOST: jordan-hatcher.com,www.jordan-hatcher.com
+          HUGO_BASE_URL: https://jordan-hatcher.com
+          HUGO_PORT: 80
+          HUGO_BIND: 0.0.0.0
+          HUGO_APPEND_PORT: false
+        volumes:
+          - website-data:/data
+        network_mode: bridge
