@@ -1,0 +1,172 @@
+---
+- name: Update and run all docker services
+  hosts: 192.168.2.103
+  remote_user: sumo
+  vars_files:
+    - secrets.yml
+
+  tasks:
+    - name: Update and run the gitea container
+      tags:
+        - gitea
+      docker_container:
+        name: gitea
+        image: gitea/gitea:latest
+        pull: yes
+        recreate: yes
+        restart_policy: always
+        env:
+          USER_UID: '1000'
+          USER_GID: '1000'
+          HTTP_PORT: '3000'
+        expose:
+          - '3000'
+        ports:
+          - '222:22'
+        volumes:
+          - gitea:/data
+        network_mode: bridge
+
+    - name: Update and run the nextcloud container
+      tags:
+        - nextcloud
+      docker_container:
+        name: nextcloud
+        image: nextcloud:latest
+        pull: yes
+        recreate: yes
+        restart_policy: always
+        exposed_ports:
+          - '80'
+        volumes:
+          - apps:/var/www/html/custom_apps
+          - config:/var/www/html/config
+          - /var/sumo/data:/var/www/html/data
+        env:
+          VIRTUAL_HOST: nextcloud.sumo.homenet
+          NEXTCLOUD_TRUSTED_DOMAINS: 'nextcloud.sumo.homenet'
+        network_mode: bridge
+        networks:
+          - name: docker_net
+
+    - name: Update and run the mariadb container
+      tags:
+        - nextcloud
+        - mariadb
+        - database
+      docker_container:
+        name: mariadb
+        image: mariadb:latest
+        pull: yes
+        recreate: yes
+        restart_policy: always
+        command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+        volumes:
+          - db:/var/lib/mysql
+        env:
+          MYSQL_ROOT_PASSWORD: "{{ mariadb_root_password }}"
+          MYSQL_PASSWORD: "{{ mariadb_password }}"
+          MYSQL_DATABASE: nextcloud
+          MYSQL_USER: "{{ mariadb_user }}"
+        network_mode: bridge
+        networks:
+          - name: docker_net
+
+    - name: Update and run the jellyfin container
+      tags:
+        - jellyfin
+      docker_container:
+        name: jellyfin
+        image: jellyfin/jellyfin:latest
+        pull: yes
+        recreate: yes
+        restart_policy: always
+        volumes:
+          - jellyfin_config:/config
+          - /var/sumo/data/:/media
+        exposed_ports:
+          - '8096'
+        env:
+          VIRTUAL_HOST: jellyfin.sumo.homenet
+          TZ: America/Eastern
+        network_mode: bridge
+        networks:
+          - name: docker_net
+
+    - name: Update and run the influxdb container
+      tags:
+        - influxdb
+        - database
+        - monitoring
+      docker_container:
+        name: influxdb
+        image: influxdb:latest
+        pull: yes
+        recreate: yes
+        restart_policy: always
+        volumes:
+          - influxdb:/var/lib/influxdb
+        ports:
+          - '8086:8086'
+        env:
+          INFLUXDB_ADMIN_USER: '{{ influxdb_admin_user }}'
+          INFLUXDB_ADMIN_PASSWORD: '{{ influxdb_admin_user_password }}'
+          INFLUXDB_USER: '{{ influxdb_user }}'
+          INFLUXDB_PASSWORD: '{{ influxdb_user_password }}'
+          INFLUXDB_READ_USER: '{{ influxdb_read_user }}'
+          INFLUXDB_READ_PASSWORD: '{{ influxdb_read_user_password }}'
+          INFLUXDB_WRITE_USER: '{{ influxdb_write_user }}'
+          INFLUXDB_WRITE_PASSWORD: '{{ influxdb_write_user_password }}'
+
+    - name: Creates unbound config directory
+      tags:
+        - unbound
+        - dns
+      file:
+        path: /var/sumo/unbound
+        state: directory
+
+    - name: Copy unbound config
+      tags:
+        - unbound
+        - dns
+      template:
+        src: templates/a-records.conf.j2
+        dest: /var/sumo/unbound/a-records.conf
+        owner: sumo
+        group: sumo
+        mode: '0644'
+        backup: yes
+
+    - name: Update and run the unbound container
+      tags:
+        - unbound
+        - dns
+      docker_container:
+        name: unbound
+        image: mvance/unbound:latest
+        pull: yes
+        recreate: yes
+        restart_policy: always
+        volumes:
+          /var/sumo/unbound/:/opt/unbound/etc/unbound/
+        ports:
+          - '53:53/tcp'
+          - '53:53/udp'
+
+    - name: Update and run the nginx proxy container
+      tags:
+        - nginx
+      docker_container:
+        name: nginx
+        image: jwilder/nginx-proxy:latest
+        pull: yes
+        recreate: yes
+        restart_policy: always
+        volumes:
+          /var/run/docker.sock:/tmp/docker.sock:ro
+        ports:
+          - '80:80'
+        network_mode: bridge
+        networks:
+          - name: docker_net

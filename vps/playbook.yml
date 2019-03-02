@@ -30,13 +30,13 @@
         recreate: yes
         restart_policy: always
         env:
-          USER_UID: 1000
-          USER_GID: 1000
-          HTTP_PORT: 3000
+          USER_UID: '1000'
+          USER_GID: '1000'
+          HTTP_PORT: '3000'
           VIRTUAL_HOST: git.jordan-hatcher.com
-          VIRTUAL_PORT: 3000
+          VIRTUAL_PORT: '3000'
         expose:
-          - 3000
+          - '3000'
         ports:
           - '222:22'
         volumes:
@@ -53,7 +53,7 @@
         image: listener:latest
         restart_policy: always
         expose:
-          - 80
+          - '80'
         env:
           VIRTUAL_HOST: webhook.jordan-hatcher.com
         volumes:
@@ -69,13 +69,13 @@
         image: latest-hugo:latest
         restart_policy: always
         expose:
-          - 80
+          - '80'
         env:
           VIRTUAL_HOST: jordan-hatcher.com,www.jordan-hatcher.com
           HUGO_BASE_URL: https://jordan-hatcher.com
-          HUGO_PORT: 80
-          HUGO_BIND: 0.0.0.0
-          HUGO_APPEND_PORT: false
+          HUGO_PORT: '80'
+          HUGO_BIND: '0.0.0.0'
+          HUGO_APPEND_PORT: 'false'
         volumes:
           - website-data:/data
         network_mode: bridge
