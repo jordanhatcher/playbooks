@@ -27,71 +27,15 @@
           - gitea:/data
         network_mode: bridge
 
-    - name: Update and run the nextcloud container
-      tags:
-        - nextcloud
-      docker_container:
+    - include_role:
         name: nextcloud
-        image: nextcloud:latest
-        pull: yes
-        recreate: yes
-        restart_policy: always
-        exposed_ports:
-          - '80'
-        volumes:
-          - apps:/var/www/html/custom_apps
-          - config:/var/www/html/config
-          - /var/sumo/data:/var/www/html/data
-        env:
-          VIRTUAL_HOST: nextcloud.sumo.homenet
-          NEXTCLOUD_TRUSTED_DOMAINS: 'nextcloud.sumo.homenet'
-        network_mode: bridge
-        networks:
-          - name: docker_net
+      vars:
+        host_directory: /var/sumo/data/
 
-    - name: Update and run the mariadb container
-      tags:
-        - nextcloud
-        - mariadb
-        - database
-      docker_container:
-        name: mariadb
-        image: mariadb:latest
-        pull: yes
-        recreate: yes
-        restart_policy: always
-        command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
-        volumes:
-          - db:/var/lib/mysql
-        env:
-          MYSQL_ROOT_PASSWORD: "{{ mariadb_root_password }}"
-          MYSQL_PASSWORD: "{{ mariadb_password }}"
-          MYSQL_DATABASE: nextcloud
-          MYSQL_USER: "{{ mariadb_user }}"
-        network_mode: bridge
-        networks:
-          - name: docker_net
-
-    - name: Update and run the jellyfin container
-      tags:
-        - jellyfin
-      docker_container:
+    - include_role:
         name: jellyfin
-        image: jellyfin/jellyfin:latest
-        pull: yes
-        recreate: yes
-        restart_policy: always
-        volumes:
-          - jellyfin_config:/config
-          - /var/sumo/data/:/media
-        exposed_ports:
-          - '8096'
-        env:
-          VIRTUAL_HOST: jellyfin.sumo.homenet
-          TZ: America/Eastern
-        network_mode: bridge
-        networks:
-          - name: docker_net
+      vars:
+        host_directory: /var/sumo/data/
 
     - name: Update and run the influxdb container
       tags:
@@ -117,42 +61,34 @@
           INFLUXDB_READ_PASSWORD: '{{ influxdb_read_user_password }}'
           INFLUXDB_WRITE_USER: '{{ influxdb_write_user }}'
           INFLUXDB_WRITE_PASSWORD: '{{ influxdb_write_user_password }}'
+        networks:
+          - name: docker_net
 
-    - name: Creates unbound config directory
+    - name: Update and run the Grafana container
       tags:
-        - unbound
-        - dns
-      file:
-        path: /var/sumo/unbound
-        state: directory
-
-    - name: Copy unbound config
-      tags:
-        - unbound
-        - dns
-      template:
-        src: templates/a-records.conf.j2
-        dest: /var/sumo/unbound/a-records.conf
-        owner: sumo
-        group: sumo
-        mode: '0644'
-        backup: yes
-
-    - name: Update and run the unbound container
-      tags:
-        - unbound
-        - dns
+        - grafana
+        - monitoring
       docker_container:
-        name: unbound
-        image: mvance/unbound:latest
+        name: grafana
+        image: grafana/grafana
         pull: yes
         recreate: yes
         restart_policy: always
+        exposed_ports:
+          - '3000'
         volumes:
-          /var/sumo/unbound/:/opt/unbound/etc/unbound/
-        ports:
-          - '53:53/tcp'
-          - '53:53/udp'
+          - grafana:/var/lib/grafana
+        env:
+          VIRTUAL_HOST: grafana.sumo.homenet
+          GF_SECURITY_ADMIN_USER: '{{ grafana_admin_user }}'
+          GF_SECURITY_ADMIN_PASSWORD: '{{ grafana_admin_password }}'
+        networks:
+          - name: docker_net
+
+    - include_role:
+        name: unbound
+      vars:
+        host_directory: /var/sumo/unbound
 
     - name: Update and run the nginx proxy container
       tags:

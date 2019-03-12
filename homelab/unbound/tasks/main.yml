@@ -1,0 +1,36 @@
+---
+- name: Creates unbound config directory
+  tags:
+    - unbound
+    - dns
+  file:
+    path: '{{ host_directory }}'
+    state: directory
+
+- name: Copy unbound config
+  tags:
+    - unbound
+    - dns
+  template:
+    src: templates/a-records.conf.j2
+    dest: '{{ host_directory }}/a-records.conf'
+    owner: sumo
+    group: sumo
+    mode: '0644'
+    backup: yes
+
+- name: Update and run the unbound container
+  tags:
+    - unbound
+    - dns
+  docker_container:
+    name: unbound
+    image: mvance/unbound:latest
+    pull: yes
+    recreate: yes
+    restart_policy: always
+    volumes:
+      '{{ host_directory }}:/opt/unbound/etc/unbound/'
+    ports:
+      - '53:53/tcp'
+      - '53:53/udp'

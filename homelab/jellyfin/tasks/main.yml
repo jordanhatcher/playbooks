@@ -1,0 +1,21 @@
+---
+- name: Update and run the jellyfin container
+  tags:
+    - jellyfin
+  docker_container:
+    name: jellyfin
+    image: jellyfin/jellyfin:latest
+    pull: yes
+    recreate: yes
+    restart_policy: always
+    volumes:
+      - jellyfin_config:/config
+      - '{{ host_directory  }}:/media'
+    exposed_ports:
+      - '8096'
+    env:
+      VIRTUAL_HOST: jellyfin.sumo.homenet
+      TZ: America/Eastern
+    network_mode: bridge
+    networks:
+      - name: docker_net
