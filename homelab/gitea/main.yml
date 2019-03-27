@@ -1,0 +1,21 @@
+---
+- name: Update and run the gitea container
+  tags:
+    - gitea
+  docker_container:
+    name: gitea
+    image: gitea/gitea:latest
+    pull: yes
+    recreate: yes
+    restart_policy: always
+    env:
+      USER_UID: '1000'
+      USER_GID: '1000'
+      HTTP_PORT: '3000'
+    expose:
+      - '3000'
+    ports:
+      - '222:22'
+    volumes:
+      - gitea:/data
+    network_mode: bridge

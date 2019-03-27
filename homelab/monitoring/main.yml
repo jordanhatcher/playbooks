@@ -1,0 +1,48 @@
+---
+- name: Update and run the influxdb container
+  tags:
+    - influxdb
+    - database
+    - monitoring
+  docker_container:
+    name: influxdb
+    image: influxdb:latest
+    pull: yes
+    recreate: yes
+    restart_policy: always
+    volumes:
+      - influxdb:/var/lib/influxdb
+    ports:
+      - '8086:8086'
+    env:
+      INFLUXDB_ADMIN_USER: '{{ influxdb_admin_user }}'
+      INFLUXDB_ADMIN_PASSWORD: '{{ influxdb_admin_user_password }}'
+      INFLUXDB_USER: '{{ influxdb_user }}'
+      INFLUXDB_PASSWORD: '{{ influxdb_user_password }}'
+      INFLUXDB_READ_USER: '{{ influxdb_read_user }}'
+      INFLUXDB_READ_PASSWORD: '{{ influxdb_read_user_password }}'
+      INFLUXDB_WRITE_USER: '{{ influxdb_write_user }}'
+      INFLUXDB_WRITE_PASSWORD: '{{ influxdb_write_user_password }}'
+    networks:
+      - name: docker_net
+
+- name: Update and run the Grafana container
+  tags:
+    - grafana
+    - monitoring
+  docker_container:
+    name: grafana
+    image: grafana/grafana
+    pull: yes
+    recreate: yes
+    restart_policy: always
+    exposed_ports:
+      - '3000'
+    volumes:
+      - grafana:/var/lib/grafana
+    env:
+      VIRTUAL_HOST: grafana.sumo.homenet
+      GF_SECURITY_ADMIN_USER: '{{ grafana_admin_user }}'
+      GF_SECURITY_ADMIN_PASSWORD: '{{ grafana_admin_password }}'
+    networks:
+      - name: docker_net

@@ -1,0 +1,17 @@
+---
+- name: Update and run the nginx proxy container
+  tags:
+    - nginx
+  docker_container:
+    name: nginx
+    image: jwilder/nginx-proxy:latest
+    pull: yes
+    recreate: yes
+    restart_policy: always
+    volumes:
+      /var/run/docker.sock:/tmp/docker.sock:ro
+    ports:
+      - '80:80'
+    network_mode: bridge
+    networks:
+      - name: docker_net
