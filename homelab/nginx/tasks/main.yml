@@ -1,4 +1,18 @@
 ---
+- name: Create nginx config directory
+  tags:
+    - nginx
+  file:
+    path: '/var/sumo/nginx/config'
+    state: directory
+
+- name: Copy nginx config
+  tags:
+    - nginx
+  copy:
+    src: '../config/custom.conf'
+    dest: '/var/sumo/nginx/config'
+
 - name: Update and run the nginx proxy container
   tags:
     - nginx
@@ -9,7 +23,8 @@
     recreate: yes
     restart_policy: always
     volumes:
-      /var/run/docker.sock:/tmp/docker.sock:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /var/sumo/nginx/config/custom.conf:/etc/nginx/conf.d/custom.conf:ro
     ports:
       - '80:80'
     network_mode: bridge
