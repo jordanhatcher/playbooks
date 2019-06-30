@@ -1,0 +1,18 @@
+---
+- name: Update and run all docker services
+  hosts: buzzbomb
+  remote_user: buzzbomb
+  tags:
+    - buzzbomb
+
+  tasks:
+    - include_role:
+        name: unbound
+      tags:
+        - unbound
+        - dns
+      vars:
+        image: mvance/unbound-rpi:latest
+        host_directory: /home/buzzbomb/unbound
+        owner: buzzbomb
+        group: buzzbomb
