@@ -14,8 +14,8 @@
   template:
     src: templates/a-records.conf.j2
     dest: '{{ host_directory }}/a-records.conf'
-    owner: sumo
-    group: sumo
+    owner: '{{ owner }}'
+    group: '{{ group }}'
     mode: '0644'
     backup: yes
 
@@ -25,7 +25,7 @@
     - dns
   docker_container:
     name: unbound
-    image: mvance/unbound:latest
+    image: '{{ image }}'
     pull: yes
     recreate: yes
     restart_policy: always

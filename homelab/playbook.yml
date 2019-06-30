@@ -4,6 +4,8 @@
   remote_user: sumo
   vars_files:
     - secrets.yml
+  tags:
+    - sumo
 
   tasks:
     - include_role:
@@ -11,21 +13,43 @@
 
     - include_role:
         name: nextcloud
+      tags:
+        - nextcloud
       vars:
         host_directory: /var/sumo/data/
 
     - include_role:
         name: jellyfin
+      tags:
+        - jellyfin
       vars:
         host_directory: /var/sumo/data/
 
     - include_role:
         name: monitoring
+      tags:
+        - influxdb
+        - database
+        - monitoring
 
     - include_role:
         name: unbound
+      tags:
+        - unbound
+        - dns
       vars:
+        image: mvance/unbound:latest
         host_directory: /var/sumo/unbound
+        owner: sumo
+        group: sumo
+
+    - include_role:
+        name: transmission
+      tags:
+        - transmission
+        - torrent
 
     - include_role:
         name: nginx
+      tags:
+        - nginx
