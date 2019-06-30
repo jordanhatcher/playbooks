@@ -1,0 +1,34 @@
+---
+- name: Update and run the transmission container
+  tags:
+    - transmission
+    - torrent
+  docker_container:
+    name: transmission
+    image: haugene/transmission-openvpn
+    pull: yes
+    recreate: yes
+    restart_policy: always
+    volumes:
+      - /var/sumo/transmission/data:/data
+      - /etc/localtime:/etc/localtime:ro
+      - /var/sumo/transmission/config/default.ovpn:/etc/openvpn/custom/default.ovpn
+      - /var/sumo/transmission/config/auth.txt:/etc/openvpn/custom/auth.txt
+      - /var/sumo/transmission/downloads:/downloads
+    exposed_ports:
+      - 9091
+    env:
+      VIRTUAL_HOST: transmisson.sumo.homenet
+      VIRTUAL_PORT: 9091
+      TRANSMISSION_DOWNLOAD_DIR: /downloads
+      CREATE_TUN_DEVICE: "true"
+      OPENVPN_PROVIDER: CUSTOM
+      OPENVPN_USERNAME: dummy
+      OPENVPN_PASSWORD: dummy
+      WEBPROXY_ENABLED: "false"
+      LOCAL_NETWORK: 192.168.0.0/16
+    network_mode: bridge
+    networks:
+      - name: docker_net
+    capabilities:
+      - NET_ADMIN
