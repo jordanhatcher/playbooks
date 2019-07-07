@@ -16,10 +16,10 @@
       - /var/sumo/transmission/config/auth.txt:/etc/openvpn/custom/auth.txt
       - /var/sumo/transmission/downloads:/downloads
     exposed_ports:
-      - 9091
+      - '9091'
     env:
       VIRTUAL_HOST: transmisson.sumo.homenet
-      VIRTUAL_PORT: 9091
+      VIRTUAL_PORT: '9091'
       TRANSMISSION_DOWNLOAD_DIR: /downloads
       CREATE_TUN_DEVICE: "true"
       OPENVPN_PROVIDER: CUSTOM

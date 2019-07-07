@@ -1,55 +1,25 @@
 ---
-- name: Update and run all docker services
+- name: Update and run all docker services on sumo
   hosts: homeserver
   remote_user: sumo
   vars_files:
     - secrets.yml
   tags:
     - sumo
-
-  tasks:
-    - include_role:
-        name: gitea
-
-    - include_role:
-        name: nextcloud
-      tags:
-        - nextcloud
+  roles:
+    - gitea
+    - monitoring
+    - transmission
+    - role: nextcloud
       vars:
-        host_directory: /var/sumo/data/
-
-    - include_role:
-        name: jellyfin
-      tags:
-        - jellyfin
+        host_directory: /var/sumo/data
+    - role: jellyfin
       vars:
-        host_directory: /var/sumo/data/
-
-    - include_role:
-        name: monitoring
-      tags:
-        - influxdb
-        - database
-        - monitoring
-
-    - include_role:
-        name: unbound
-      tags:
-        - unbound
-        - dns
+        host_directory: /var/sumo/data
+    - role: unbound
       vars:
         image: mvance/unbound:latest
         host_directory: /var/sumo/unbound
         owner: sumo
         group: sumo
-
-    - include_role:
-        name: transmission
-      tags:
-        - transmission
-        - torrent
-
-    - include_role:
-        name: nginx
-      tags:
-        - nginx
+    - nginx
