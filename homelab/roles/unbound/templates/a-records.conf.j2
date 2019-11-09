@@ -1,6 +1,8 @@
-local-data: "sumo.homenet A 192.168.2.103"
-local-data: "jellyfin.sumo.homenet A 192.168.2.103"
-local-data: "nextcloud.sumo.homenet A 192.168.2.103"
-local-data: "grafana.sumo.homenet A 192.168.2.103"
-local-data: "transmission.sumo.homenet A 192.168.2.103"
-local-data: "buzzbomb.homenet A 192.168.2.104"
+#jinja2: lstrip_blocks: "True"
+{% for record in a_records %}
+    {% if 'subdomain' in record %}
+local-data: "{{ record['subdomain'] }}.{{ hostvars[record['host']].dns_name }} A {{ hostvars[record['host']].ansible_host }}"
+    {% else %}
+local-data: "{{ hostvars[record['host']].dns_name }} A {{ hostvars[record['host']].ansible_host }}"
+    {% endif %}
+{% endfor %}

@@ -1,5 +1,3 @@
-[homeserver]
-192.168.2.103
-
-[buzzbomb]
-192.168.2.104
+[homelab]
+sumo     ansible_host=192.168.0.11 dns_name=sumo.cactusnet
+buzzbomb ansible_host=192.168.0.12 dns_name=buzzbomb.cactusnet

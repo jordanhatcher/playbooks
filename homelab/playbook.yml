@@ -1,6 +1,6 @@
 ---
 - name: Update and run all docker services on sumo
-  hosts: homeserver
+  hosts: sumo
   remote_user: sumo
   vars_files:
     - secrets.yml
@@ -18,8 +18,16 @@
         host_directory: /var/sumo/data
     - role: unbound
       vars:
-        image: mvance/unbound:latest
+        is_rpi: no
         host_directory: /var/sumo/unbound
+        a_records:
+          - { host: sumo }
+          - { subdomain: gitea, host: sumo }
+          - { subdomain: monitoring, host: sumo }
+          - { subdomain: transmission, host: sumo }
+          - { subdomain: nextcloud, host: sumo }
+          - { subdomain: jellyfin, host: sumo }
+          - { host: buzzbomb }
         owner: sumo
         group: sumo
     - nginx

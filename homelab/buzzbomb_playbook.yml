@@ -7,7 +7,7 @@
   roles:
     - role: unbound
       vars:
-        image: mvance/unbound-rpi:latest
+        is_rpi: yes
         host_directory: /home/buzzbomb/unbound
         owner: buzzbomb
         group: buzzbomb

@@ -25,7 +25,7 @@
     - dns
   docker_container:
     name: unbound
-    image: '{{ image }}'
+    image: "{{ 'mvance/unbound-rpi:latest' if (is_rpi) else 'mvance/unbound:latest' }}"
     pull: yes
     recreate: yes
     restart_policy: always
