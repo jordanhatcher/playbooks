@@ -1,0 +1,10 @@
+[Interface]
+Address = {{ private_ip }}/24
+
+[Peer]
+PublicKey = {{ server_public_key }}
+Endpoint = {{ server_ip }}:{{ server_listen_port }}
+AllowedIPs = 0.0.0.0/0, ::/0
+
+# Behind NAT
+PersistentKeepalive = 25

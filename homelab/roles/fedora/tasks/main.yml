@@ -1,0 +1,10 @@
+---
+# Common settings for Fedora servers
+- name: Install common utils
+  dnf:
+    name:
+      - vim
+      - jq
+      - dnf-plugins-core
+    state: installed
+  become: yes
