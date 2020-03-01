@@ -8,8 +8,32 @@
   dnf:
     name:
       - docker-ce
-      - python-docker-py
-      - python-pip 
+      - python-docker
+      - python-pip
     state: installed
-    releasever: 29 # Repo not added for Fedora 31 yet
+  become: yes
+
+- name: Enable docker on startup
+  systemd:
+    name: docker.service
+    enabled: yes
+  become: yes
+
+- name: Start docker
+  systemd:
+    name: docker.service
+    state: started
+  become: yes
+
+- name: Ensure docker group exists
+  group:
+    name: docker
+    state: present
+
+- name: Adding jordan to docker group
+  user:
+    name: jordan
+    groups:
+      - docker
+    append: yes
   become: yes

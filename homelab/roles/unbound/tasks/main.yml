@@ -4,8 +4,9 @@
     - unbound
     - dns
   file:
-    path: '{{ host_directory }}'
+    path: '/var/unbound'
     state: directory
+  become: yes
 
 - name: Copy unbound config
   tags:
@@ -13,11 +14,12 @@
     - dns
   template:
     src: templates/a-records.conf.j2
-    dest: '{{ host_directory }}/a-records.conf'
-    owner: '{{ owner }}'
-    group: '{{ group }}'
+    dest: '/var/unbound/a-records.conf'
+    owner: 'root'
+    group: 'root'
     mode: '0644'
-    backup: yes
+    backup: no
+  become: yes
 
 - name: Update and run the unbound container
   tags:
@@ -30,7 +32,7 @@
     recreate: yes
     restart_policy: always
     volumes:
-      '{{ host_directory }}:/opt/unbound/etc/unbound/'
+      '/var/unbound/:/opt/unbound/etc/unbound/'
     ports:
       - '53:53/tcp'
       - '53:53/udp'

@@ -1,33 +1,59 @@
 ---
+- name: Apply common fedora configuration to all hosts
+  hosts: all
+  remote_user: jordan
+  vars_files:
+    - secrets.yml
+  roles:
+    - fedora
+
+
+# Move to common once docker on F31 ARM is figured out
+- name: Install docker
+  hosts: sumo
+  remote_user: jordan
+  vars_files:
+    - secrets.yml
+  tags:
+    - docker
+  roles:
+    - docker
+
+
+- name: Configure the wireguard server
+  hosts: warden
+  remote_user: jordan
+  vars_files:
+    - secrets.yml
+  tags:
+    - vpn
+    - warden
+  roles:
+    - role: wireguard
+      vars:
+        is_server: yes
+        private_ip: 10.0.0.1
+        listen_port: 4997
+        private_key: '{{ warden_wg_private_key }}'
+        peers:
+          # Phone
+          - public_key: 0McW9C2yJkBbL1BMRxDHaFTejm8woSDQRnDLK/qj8kI=
+            private_ip: 10.0.0.100
+
+
+
 - name: Update and run all docker services on sumo
   hosts: sumo
-  remote_user: sumo
+  remote_user: jordan
   vars_files:
     - secrets.yml
   tags:
     - sumo
   roles:
-    - gitea
-    - monitoring
-    - transmission
-    - role: nextcloud
-      vars:
-        host_directory: /var/sumo/data
-    - role: jellyfin
-      vars:
-        host_directory: /var/sumo/data
     - role: unbound
       vars:
         is_rpi: no
-        host_directory: /var/sumo/unbound
         a_records:
           - { host: sumo }
-          - { subdomain: gitea, host: sumo }
-          - { subdomain: monitoring, host: sumo }
-          - { subdomain: transmission, host: sumo }
-          - { subdomain: nextcloud, host: sumo }
+          - { host: warden }
           - { subdomain: jellyfin, host: sumo }
-          - { host: buzzbomb }
-        owner: sumo
-        group: sumo
-    - nginx
