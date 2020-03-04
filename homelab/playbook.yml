@@ -57,3 +57,7 @@
           - { host: sumo }
           - { host: warden }
           - { subdomain: jellyfin, host: sumo }
+
+    - role: jellyfin
+      vars:
+        host_media_directory: /var/media

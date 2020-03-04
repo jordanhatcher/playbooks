@@ -1,4 +1,12 @@
 ---
+- name: Ensure the host media folder exists
+  tags:
+    - jellyfin
+  file:
+    path: '{{ host_media_directory }}'
+    state: directory
+  become: yes
+
 - name: Update and run the jellyfin container
   tags:
     - jellyfin
@@ -6,16 +14,21 @@
     name: jellyfin
     image: jellyfin/jellyfin:latest
     pull: yes
-    recreate: yes
+    state: started
     restart_policy: always
     volumes:
       - jellyfin_config:/config
-      - '{{ host_directory  }}:/media'
-    exposed_ports:
-      - '8096'
+      - '{{ host_media_directory  }}:/media'
     env:
-      VIRTUAL_HOST: jellyfin.sumo.homenet
       TZ: America/Eastern
-    network_mode: bridge
-    networks:
-      - name: docker_net
+    network_mode: host
+
+- name: Open port in firewalld
+  firewalld:
+    port: '{{ item }}'
+    permanent: yes
+    state: enabled
+  loop:
+    - '8096/tcp'
+    - '1900/udp'
+  become: yes
