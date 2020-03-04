@@ -1,0 +1,21 @@
+---
+# Common settings for Fedora servers
+- name: Install common utils
+  dnf:
+    name:
+      - vim
+      - jq
+      - zsh
+      - dnf-plugins-core
+    state: installed
+  become: yes
+
+- name: Adding user jordan
+  user:
+    name: jordan
+    group: jordan
+    shell: /bin/zsh
+    groups:
+      - wheel
+    append: yes
+  become: yes

@@ -1,0 +1,39 @@
+---
+# Installs docker
+- name: Add docker repository
+  command: dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+  become: yes
+
+- name: Install docker and docker python libs
+  dnf:
+    name:
+      - docker-ce
+      - python-docker
+      - python-pip
+    state: installed
+  become: yes
+
+- name: Enable docker on startup
+  systemd:
+    name: docker.service
+    enabled: yes
+  become: yes
+
+- name: Start docker
+  systemd:
+    name: docker.service
+    state: started
+  become: yes
+
+- name: Ensure docker group exists
+  group:
+    name: docker
+    state: present
+
+- name: Adding jordan to docker group
+  user:
+    name: jordan
+    groups:
+      - docker
+    append: yes
+  become: yes

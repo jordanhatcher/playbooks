@@ -18,7 +18,7 @@
     exposed_ports:
       - '9091'
     env:
-      VIRTUAL_HOST: transmisson.sumo.homenet
+      VIRTUAL_HOST: transmission.sumo.homenet
       VIRTUAL_PORT: '9091'
       TRANSMISSION_DOWNLOAD_DIR: /downloads
       CREATE_TUN_DEVICE: "true"

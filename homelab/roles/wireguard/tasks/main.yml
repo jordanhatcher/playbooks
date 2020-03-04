@@ -1,0 +1,48 @@
+---
+- name: Enable wireguard copr repository
+  command: dnf copr enable jdoss/wireguard -y
+  become: yes
+
+- name: Install wireguard packages
+  dnf:
+    name:
+      - wireguard-dkms
+      - wireguard-tools
+    state: installed
+  become: yes
+
+- name: Create wireguard config directory
+  file:
+    path: /etc/wireguard
+    state: directory
+  become: yes
+
+- name: Add wireguard config file
+  template:
+    src: "templates/{{ 'server.j2' if (is_server) else 'client.j2' }}"
+    dest: /etc/wireguard/wg0.conf
+    owner: root
+    group: root
+    mode: '0600'
+    backup: no
+  become: yes
+
+- name: Open port in firewalld
+  firewalld:
+    port: '{{ listen_port }}/udp'
+    permanent: yes
+    state: enabled
+  when: is_server
+  become: yes
+
+- name: Enable wg0 on startup
+  systemd:
+    name: wg-quick@wg0.service
+    enabled: yes
+  become: yes
+
+- name: Start wg0
+  systemd:
+    name: wg-quick@wg0.service
+    state: started
+  become: yes
