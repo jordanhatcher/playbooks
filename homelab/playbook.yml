@@ -8,9 +8,8 @@
     - fedora
 
 
-# Move to common once docker on F31 ARM is figured out
-- name: Install docker
-  hosts: sumo
+- name: Install docker on hosts
+  hosts: all
   remote_user: jordan
   vars_files:
     - secrets.yml
@@ -41,23 +40,33 @@
             private_ip: 10.0.0.100
 
 
+- name: Update and run unbound DNS server on warden
+  hosts: warden
+  remote_user: jordan
+  vars_files:
+    - secrets.yml
+    - vars.yml
+  tags:
+    - dns
+  roles:
+    - role: unbound
+      vars:
+        is_rpi: yes
 
-- name: Update and run all docker services on sumo
+
+- name: Update and run docker services on sumo
   hosts: sumo
   remote_user: jordan
   vars_files:
     - secrets.yml
-  tags:
-    - sumo
+    - vars.yml
   roles:
     - role: unbound
       vars:
         is_rpi: no
-        a_records:
-          - { host: sumo }
-          - { host: warden }
-          - { subdomain: jellyfin, host: sumo }
 
     - role: jellyfin
       vars:
         host_media_directory: /var/media
+
+    - role: monitoring

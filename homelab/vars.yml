@@ -1,0 +1,6 @@
+a_records:
+  - { host: sumo }
+  - { host: warden }
+  - { subdomain: jellyfin, host: sumo }
+  - { subdomain: influxdb, host: sumo }
+  - { subdomain: grafana, host: sumo }

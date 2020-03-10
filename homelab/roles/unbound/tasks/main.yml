@@ -32,7 +32,7 @@
     recreate: yes
     restart_policy: always
     volumes:
-      '/var/unbound/:/opt/unbound/etc/unbound/'
+      '/var/unbound/a-records.conf:/opt/unbound/etc/unbound/a-records.conf'
     ports:
       - '53:53/tcp'
       - '53:53/udp'

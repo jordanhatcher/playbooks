@@ -37,3 +37,8 @@
       - docker
     append: yes
   become: yes
+
+- name: Create a docker network
+  docker_network:
+    name: docker_net
+  become: yes
