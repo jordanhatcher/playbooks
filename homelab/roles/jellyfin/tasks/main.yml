@@ -5,7 +5,6 @@
   file:
     path: '{{ host_media_directory }}'
     state: directory
-  become: yes
 
 - name: Update and run the jellyfin container
   tags:
@@ -31,4 +30,3 @@
   loop:
     - '8096/tcp'
     - '1900/udp'
-  become: yes

@@ -3,15 +3,15 @@
   tags:
     - nginx
   file:
-    path: '/var/sumo/nginx/config'
+    path: '/var/nginx/config'
     state: directory
 
 - name: Copy nginx config
   tags:
     - nginx
   copy:
-    src: '../config/custom.conf'
-    dest: '/var/sumo/nginx/config'
+    src: 'files/custom.conf'
+    dest: '/var/nginx/config'
 
 - name: Update and run the nginx proxy container
   tags:
@@ -24,7 +24,7 @@
     restart_policy: always
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
-      - /var/sumo/nginx/config/custom.conf:/etc/nginx/conf.d/custom.conf:ro
+      - /var/nginx/config/custom.conf:/etc/nginx/conf.d/custom.conf:ro
     ports:
       - '80:80'
     network_mode: bridge

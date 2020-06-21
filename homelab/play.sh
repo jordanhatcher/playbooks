@@ -1,3 +1,7 @@
 #!/bin/bash
 
-ansible-playbook -i hosts.yml --ask-become-pass --ask-vault-pass playbook.yml
+ansible-playbook \
+    -i hosts.yml \
+    --ask-vault-pass \
+    --ask-become-pass \
+    playbook.yml

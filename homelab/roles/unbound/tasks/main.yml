@@ -6,7 +6,6 @@
   file:
     path: '/var/unbound'
     state: directory
-  become: yes
 
 - name: Copy unbound config
   tags:
@@ -19,7 +18,6 @@
     group: 'root'
     mode: '0644'
     backup: no
-  become: yes
 
 - name: Update and run the unbound container
   tags:

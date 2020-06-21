@@ -7,8 +7,8 @@
       - jq
       - zsh
       - dnf-plugins-core
+      - dnf-automatic
     state: installed
-  become: yes
 
 - name: Adding user jordan
   user:
@@ -18,4 +18,17 @@
     groups:
       - wheel
     append: yes
-  become: yes
+
+- name: Copy dnf-automatic config
+  copy:
+    src: 'files/automatic.conf'
+    dest: /etc/dnf/automatic.conf
+    owner: root
+    group: root
+    mode: '0600'
+    backup: no
+
+- name: Auto update
+  systemd:
+    name: dnf-automatic.timer
+    state: started

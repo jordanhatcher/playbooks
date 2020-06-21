@@ -1,0 +1,25 @@
+---
+- name: Install ddclient
+  tags:
+    - dyndns
+  dnf:
+    name: ddclient
+    state: installed
+
+- name: Add ddclient config file
+  tags:
+    - dyndns
+  template:
+    src: "templates/ddclient.conf.j2"
+    dest: /etc/ddclient.conf
+    owner: root
+    group: root
+    mode: '0600'
+    backup: no
+
+- name: Enable ddclient service
+  tags:
+    - dyndns
+  systemd:
+    name: ddclient.service
+    enabled: yes

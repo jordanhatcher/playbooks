@@ -1,21 +1,15 @@
 ---
-- name: Enable wireguard copr repository
-  command: dnf copr enable jdoss/wireguard -y
-  become: yes
-
 - name: Install wireguard packages
   dnf:
     name:
       - wireguard-dkms
       - wireguard-tools
     state: installed
-  become: yes
 
 - name: Create wireguard config directory
   file:
     path: /etc/wireguard
     state: directory
-  become: yes
 
 - name: Add wireguard config file
   template:
@@ -25,24 +19,39 @@
     group: root
     mode: '0600'
     backup: no
-  become: yes
+
+- name: Enable IPv4 fowarding
+  copy:
+    src: files/01-enable-ipv4-forwarding.conf
+    dest: /etc/sysctl.d/01-enable-ipv4-forwarding.conf
+    owner: root
+    group: root
+    mode: '0600'
+    backup: no
+  when: is_server
 
 - name: Open port in firewalld
   firewalld:
+    zone: public
     port: '{{ listen_port }}/udp'
     permanent: yes
     state: enabled
   when: is_server
-  become: yes
+
+- name: Enable masquerade for public zone
+  firewalld:
+    zone: public
+    masquerade: 'yes'
+    permanent: yes
+    state: enabled
+  when: is_server
 
 - name: Enable wg0 on startup
   systemd:
     name: wg-quick@wg0.service
     enabled: yes
-  become: yes
 
 - name: Start wg0
   systemd:
     name: wg-quick@wg0.service
     state: started
-  become: yes

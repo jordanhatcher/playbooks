@@ -1,0 +1,11 @@
+---
+- name: Apply common configuration to all hosts
+  hosts: all
+  become: yes
+  become_user: root
+  become_method: su
+  vars_files:
+    - secrets.yml
+  roles:
+    - fedora
+    - docker
