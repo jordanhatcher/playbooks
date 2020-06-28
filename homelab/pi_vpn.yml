@@ -5,8 +5,8 @@
   become_method: su
   vars_files:
     - secrets.yml
-    - vars.yml
   vars:
+    is_rpi: yes
     is_server: yes
     private_ip: 10.0.0.1
     listen_port: 4997
@@ -22,3 +22,4 @@
     - role: dyndns
     - role: wireguard
     - role: unbound
+    - role: monitored

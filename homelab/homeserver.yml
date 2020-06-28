@@ -5,7 +5,6 @@
   become_method: su
   vars_files:
     - secrets.yml
-    - vars.yml
   vars:
     is_rpi: no
     host_media_directory: /var/media
@@ -14,3 +13,4 @@
     - role: unbound
     - role: jellyfin
     - role: nginx
+    - role: monitored
