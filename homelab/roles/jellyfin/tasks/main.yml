@@ -20,13 +20,7 @@
       - '{{ host_media_directory  }}:/media'
     env:
       TZ: America/Eastern
-    network_mode: host
-
-- name: Open port in firewalld
-  firewalld:
-    port: '{{ item }}'
-    permanent: yes
-    state: enabled
-  loop:
-    - '8096/tcp'
-    - '1900/udp'
+      VIRTUAL_HOST: 'jellyfin.{{ hostvars[inventory_hostname].dns_name }}'
+    network_mode: bridge
+    networks:
+      - name: docker_net

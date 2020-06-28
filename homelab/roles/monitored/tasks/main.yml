@@ -1,0 +1,50 @@
+- name: Add InfluxDB Repository
+  tags:
+    - monitored
+  yum_repository:
+    name: influxdb-repo
+    description: InfluxDB Repository
+    file: influxdb
+    baseurl: https://repos.influxdata.com/rhel/7/x86_64/stable/
+    gpgcheck: yes
+    gpgkey: https://repos.influxdata.com/influxdb.key
+  when: not is_rpi
+
+- name: Install telegraf
+  tags:
+    - monitored
+  dnf:
+    name: telegraf
+    state: installed
+  when: not is_rpi
+
+- name: Install telegraf from binary
+  tags:
+    - monitored
+  shell: |
+    curl https://dl.influxdata.com/telegraf/releases/telegraf-1.14.4_linux_armhf.tar.gz -o telegraf.tar.gz
+    tar -xf telegraf.tar.gz
+    cp ./telegraf/etc/logrotate.d/telegraf /etc/logrotate.d/telegraf
+    cp -r ./telegraf/etc/telegraf /etc/
+    cp ./telegraf/usr/bin/telegraf /usr/bin/
+    cp -r ./telegraf/usr/lib/telegraf /usr/lib/
+    mkdir -p /var/log/telegraf
+    systemctl link /usr/lib/telegraf/scripts/telegraf.service
+  when: is_rpi
+  args:
+    creates: /usr/bin/telegraf
+
+- name: Enable telegraf service
+  tags:
+    - monitored
+  systemd:
+    name: telegraf
+    enabled: yes
+    state: started
+
+- name: Copy telegraf config
+  tags:
+    - monitored
+  template:
+    src: templates/telegraf.conf.j2
+    dest: /etc/telegraf/telegraf.conf
