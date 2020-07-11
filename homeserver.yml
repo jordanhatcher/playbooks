@@ -5,9 +5,6 @@
   become_method: su
   vars_files:
     - secrets.yml
-  vars:
-    is_rpi: no
-    host_media_directory: /var/media
   roles:
     - role: monitoring
     - role: unbound

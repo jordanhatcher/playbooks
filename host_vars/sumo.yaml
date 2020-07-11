@@ -1,6 +1,8 @@
 ---
 ansible_host: 192.168.0.10
 dns_name: sumo.cactusnet
-
+is_rpi: no
 
 telegraf_config_file: templates/sumo/telegraf.conf.j2
+
+host_media_directory: /var/media
