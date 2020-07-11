@@ -46,5 +46,5 @@
   tags:
     - monitored
   template:
-    src: templates/telegraf.conf.j2
+    src: '{{ telegraf_config_file }}'
     dest: /etc/telegraf/telegraf.conf

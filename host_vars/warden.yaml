@@ -1,0 +1,24 @@
+---
+ansible_host: 192.168.0.11
+dns_name: warden.cactusnet
+is_rpi: yes
+
+
+telegraf_config_file: templates/warden/telegraf.conf.j2
+
+
+### Wireguard conf ###
+is_server: yes
+wg_listen_port: 4997
+wg_private_ip: 10.0.0.1
+
+wg_pub_key: 7a/10/+U8T7XHTH5zsUUL1aZK39PZ+ujRTAE/9cTo30=
+wg_private_key: '{{ warden_wg_private_key }}'
+wg_peers:
+  # Phone
+  - wg_public_key: 0McW9C2yJkBbL1BMRxDHaFTejm8woSDQRnDLK/qj8kI=
+    wg_private_ip: 10.0.0.100
+
+  # Laptop
+  - wg_public_key: 
+    wg_private_ip: 10.0.0.101

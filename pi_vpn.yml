@@ -5,16 +5,6 @@
   become_method: su
   vars_files:
     - secrets.yml
-  vars:
-    is_rpi: yes
-    is_server: yes
-    private_ip: 10.0.0.1
-    listen_port: 4997
-    private_key: '{{ warden_wg_private_key }}'
-    peers:
-      # Phone
-      - public_key: 0McW9C2yJkBbL1BMRxDHaFTejm8woSDQRnDLK/qj8kI=
-        private_ip: 10.0.0.100
   tags:
     - vpn
     - warden

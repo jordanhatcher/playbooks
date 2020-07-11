@@ -1,0 +1,3 @@
+---
+is_rpi: no
+telegraf_config_file: templates/telegraf.conf.j2

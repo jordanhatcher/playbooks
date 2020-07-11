@@ -13,7 +13,7 @@
 
 - name: Add wireguard config file
   template:
-    src: "templates/{{ 'server.j2' if (is_server) else 'client.j2' }}"
+    src: "templates/{{ 'server.j2' if (is_wg_server) else 'client.j2' }}"
     dest: /etc/wireguard/wg0.conf
     owner: root
     group: root
@@ -28,15 +28,15 @@
     group: root
     mode: '0600'
     backup: no
-  when: is_server
+  when: is_wg_server
 
 - name: Open port in firewalld
   firewalld:
     zone: public
-    port: '{{ listen_port }}/udp'
+    port: '{{ wg_listen_port }}/udp'
     permanent: yes
     state: enabled
-  when: is_server
+  when: is_wg_server
 
 - name: Enable masquerade for public zone
   firewalld:
@@ -44,7 +44,7 @@
     masquerade: 'yes'
     permanent: yes
     state: enabled
-  when: is_server
+  when: is_wg_server
 
 - name: Enable wg0 on startup
   systemd:

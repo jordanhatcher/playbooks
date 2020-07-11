@@ -1,0 +1,11 @@
+---
+- name: Update and run all docker services
+  hosts: jordan-hatcher.com
+  become: yes
+  become_user: root
+  become_method: su
+  vars_files:
+    - secrets.yml
+  roles:
+    - nginx
+    - website

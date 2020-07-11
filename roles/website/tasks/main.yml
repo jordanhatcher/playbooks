@@ -1,0 +1,35 @@
+---
+- name: Start github webhook listener for the jordan-hatcher.com
+  tags:
+    - jordan-hatcher.com
+  docker_container:
+    name: jordan-hatcher-listener
+    image: listener:latest
+    restart_policy: always
+    expose:
+      - '80'
+    env:
+      VIRTUAL_HOST: webhook.jordan-hatcher.com
+    volumes:
+      - /home/jordan/storage/listener-config/config.json:/src/config.json
+      - website-data:/data
+    network_mode: bridge
+
+- name: Run website container for jordan-hatcher.com
+  tags:
+    - jordan-hatcher.com
+  docker_container:
+    name: jordan-hatcher.com
+    image: latest-hugo:latest
+    restart_policy: always
+    expose:
+    - '80'
+    env:
+    VIRTUAL_HOST: jordan-hatcher.com,www.jordan-hatcher.com
+    HUGO_BASE_URL: https://jordan-hatcher.com
+    HUGO_PORT: '80'
+    HUGO_BIND: '0.0.0.0'
+    HUGO_APPEND_PORT: 'false'
+    volumes:
+    - website-data:/data
+    network_mode: bridge
