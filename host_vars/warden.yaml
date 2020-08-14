@@ -8,7 +8,7 @@ telegraf_config_file: templates/warden/telegraf.conf.j2
 
 
 ### Wireguard conf ###
-is_server: yes
+is_wg_server: yes
 wg_listen_port: 4997
 wg_private_ip: 10.0.0.1
 

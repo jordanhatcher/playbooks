@@ -48,3 +48,12 @@
   template:
     src: '{{ telegraf_config_file }}'
     dest: /etc/telegraf/telegraf.conf
+  register: telegraf_config
+
+- name: "Reload telegraf"
+  tags:
+    - monitored
+  systemd:
+    name: telegraf
+    state: restarted
+  when: telegraf_config.changed

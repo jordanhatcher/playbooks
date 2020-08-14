@@ -1,9 +1,8 @@
 ---
 - name: Update and run all docker services
-  hosts: jordan-hatcher.com
+  hosts: watchman
   become: yes
-  become_user: root
-  become_method: su
+  become_method: sudo
   vars_files:
     - secrets.yml
   roles:

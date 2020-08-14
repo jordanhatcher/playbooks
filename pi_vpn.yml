@@ -1,8 +1,7 @@
 - name: Configure the wireguard server
   hosts: warden
   become: yes
-  become_user: root
-  become_method: su
+  become_method: sudo
   vars_files:
     - secrets.yml
   tags:

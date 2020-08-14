@@ -1,3 +1,5 @@
 ---
 ansible_host: jordan-hatcher.com
 dns_name: jordan-hatcher.com
+
+ssl_cert_path: /etc/letsencrypt/live/certs/

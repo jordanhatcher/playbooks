@@ -25,10 +25,10 @@
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - /var/nginx/config/custom.conf:/etc/nginx/conf.d/custom.conf:ro
+      - '{{ ssl_cert_path }}:/etc/nginx/certs'
     ports:
       - '80:80'
       - '443:443'
-    network_mode: bridge
     networks:
       - name: docker_net
 

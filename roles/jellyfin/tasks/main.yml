@@ -17,7 +17,7 @@
     restart_policy: always
     volumes:
       - jellyfin_config:/config
-      - '{{ host_media_directory  }}:/media'
+      - '{{ host_media_directory }}:/media'
     env:
       TZ: America/Eastern
       VIRTUAL_HOST: 'jellyfin.{{ hostvars[inventory_hostname].dns_name }}'

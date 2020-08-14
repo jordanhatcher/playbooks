@@ -1,8 +1,7 @@
 - name: Update and run docker services on sumo
   hosts: sumo
   become: yes
-  become_user: root
-  become_method: su
+  become_method: sudo
   vars_files:
     - secrets.yml
   roles:
