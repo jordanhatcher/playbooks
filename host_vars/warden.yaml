@@ -20,5 +20,5 @@ wg_peers:
     wg_private_ip: 10.0.0.100
 
   # Laptop
-  #- wg_public_key: 
-  #  wg_private_ip: 10.0.0.101
+  - wg_public_key: Zcg+251LQJ99TPfxROWDY8yq+UYsdg4e3A77Q/eHcyQ=
+    wg_private_ip: 10.0.0.101
