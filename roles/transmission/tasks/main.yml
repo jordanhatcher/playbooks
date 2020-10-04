@@ -1,34 +1,31 @@
 ---
+- name: Ensure the torrent download directory exists on the host
+  tags:
+    - transmission
+    - torrent
+  file:
+    path: '{{ transmission_download_dir }}'
+    state: directory
+
 - name: Update and run the transmission container
   tags:
     - transmission
     - torrent
   docker_container:
     name: transmission
-    image: haugene/transmission-openvpn
+    image: linuxserver/transmission:latest
     pull: yes
-    recreate: yes
+    state: started
     restart_policy: always
     volumes:
-      - /var/sumo/transmission/data:/data
-      - /etc/localtime:/etc/localtime:ro
-      - /var/sumo/transmission/config/default.ovpn:/etc/openvpn/custom/default.ovpn
-      - /var/sumo/transmission/config/auth.txt:/etc/openvpn/custom/auth.txt
-      - /var/sumo/transmission/downloads:/downloads
+      - '{{ torrent_download_dir }}:/downloads'
     exposed_ports:
       - '9091'
     env:
-      VIRTUAL_HOST: transmission.sumo.homenet
+      VIRTUAL_HOST: 'transmission.{{ hostvars[inventory_hostname].dns_name }}'
       VIRTUAL_PORT: '9091'
-      TRANSMISSION_DOWNLOAD_DIR: /downloads
-      CREATE_TUN_DEVICE: "true"
-      OPENVPN_PROVIDER: CUSTOM
-      OPENVPN_USERNAME: dummy
-      OPENVPN_PASSWORD: dummy
-      WEBPROXY_ENABLED: "false"
-      LOCAL_NETWORK: 192.168.0.0/16
+      USER: '{{ transmission_user }}'
+      PASS: '{{ transmission_password }}'
     network_mode: bridge
     networks:
       - name: docker_net
-    capabilities:
-      - NET_ADMIN

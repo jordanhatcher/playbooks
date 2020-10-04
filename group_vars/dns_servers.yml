@@ -4,3 +4,4 @@ a_records:
   - { subdomain: jellyfin, host: sumo }
   - { subdomain: influxdb, host: sumo }
   - { subdomain: grafana, host: sumo }
+  - { subdomain: transmission, host: sumo }

@@ -10,3 +10,4 @@
     - role: jellyfin
     - role: nginx
     - role: monitored
+    - role: transmission
