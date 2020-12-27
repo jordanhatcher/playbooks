@@ -12,3 +12,6 @@ host_media_directory: /var/media
 
 # Transmission
 transmission_download_dir: /var/torrents
+
+# Nextcloud
+nextcloud_host_directory: /data

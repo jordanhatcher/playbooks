@@ -18,7 +18,7 @@
     state: started
     restart_policy: always
     volumes:
-      - '{{ torrent_download_dir }}:/downloads'
+      - '{{ transmission_download_dir }}:/downloads'
     exposed_ports:
       - '9091'
     env:

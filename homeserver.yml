@@ -11,3 +11,4 @@
     - role: nginx
     - role: monitored
     - role: transmission
+    - role: nextcloud

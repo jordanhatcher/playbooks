@@ -1,4 +1,11 @@
 ---
+- name: Ensure nextcloud host directory exists
+  tags:
+    - nextcloud
+  file:
+    path: '{{ nextcloud_host_directory }}'
+    state: directory
+
 - name: Update and run the mariadb container
   tags:
     - nextcloud
@@ -14,10 +21,10 @@
     volumes:
       - db:/var/lib/mysql
     env:
-      MYSQL_ROOT_PASSWORD: "{{ mariadb_root_password }}"
-      MYSQL_PASSWORD: "{{ mariadb_password }}"
+      MYSQL_ROOT_PASSWORD: '{{ mariadb_root_password }}'
+      MYSQL_PASSWORD: '{{ mariadb_password }}'
       MYSQL_DATABASE: nextcloud
-      MYSQL_USER: "{{ mariadb_user }}"
+      MYSQL_USER: '{{ mariadb_user }}'
     network_mode: bridge
     networks:
       - name: docker_net
@@ -36,10 +43,18 @@
     volumes:
       - apps:/var/www/html/custom_apps
       - config:/var/www/html/config
-      - '{{ host_directory }}:/var/www/html/data'
+      - '{{ nextcloud_host_directory }}:/var/www/html/data'
     env:
-      VIRTUAL_HOST: nextcloud.sumo.homenet
-      NEXTCLOUD_TRUSTED_DOMAINS: 'nextcloud.sumo.homenet'
+      VIRTUAL_HOST: 'nextcloud.{{ hostvars[inventory_hostname].dns_name }}'
+
+      NEXTCLOUD_TRUSTED_DOMAINS: 'nextcloud.{{ hostvars[inventory_hostname].dns_name }}'
+      NEXTCLOUD_ADMIN_USER: '{{ nextcloud_admin_user }}'
+      NEXTCLOUD_ADMIN_PASSWORD: '{{ nextcloud_admin_password }}'
+
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: '{{ mariadb_user }}'
+      MYSQL_PASSWORD: '{{ mariadb_password }}'
+      MYSQL_HOST: mariadb
     network_mode: bridge
     networks:
       - name: docker_net

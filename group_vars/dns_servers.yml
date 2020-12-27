@@ -5,3 +5,4 @@ a_records:
   - { subdomain: influxdb, host: sumo }
   - { subdomain: grafana, host: sumo }
   - { subdomain: transmission, host: sumo }
+  - { subdomain: nextcloud, host: sumo }
