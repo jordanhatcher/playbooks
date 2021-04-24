@@ -17,6 +17,7 @@
       - '1313'
     env:
       VIRTUAL_HOST: jordan-hatcher.com,www.jordan-hatcher.com
+      LETSENCRYPT_HOST: jordan-hatcher.com,www.jordan-hatcher.com
     volumes:
     - /var/website:/src
     purge_networks: yes

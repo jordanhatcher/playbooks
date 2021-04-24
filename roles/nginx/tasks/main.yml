@@ -18,19 +18,43 @@
     - nginx
   docker_container:
     name: nginx
-    image: jwilder/nginx-proxy:latest
+    image: nginxproxy/nginx-proxy:latest
     pull: yes
     recreate: yes
     restart_policy: always
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - /var/nginx/config/custom.conf:/etc/nginx/conf.d/custom.conf:ro
-      - '{{ ssl_cert_path }}:/etc/nginx/certs'
+      - /var/nginx/certs:/etc/nginx/certs:ro
+      - /var/nginx/vhost:/etc/nginx/vhost.d
+      - /var/nginx/html:/usr/share/nginx/html
     ports:
       - '80:80'
       - '443:443'
     networks:
       - name: docker_net
+
+- name: Update and run the acme-companion container
+  tags:
+    - nginx
+  docker_container:
+    name: nginx-acme-companion
+    image: nginxproxy/acme-companion:latest
+    pull: yes
+    recreate: yes
+    restart_policy: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/nginx/certs:/etc/nginx/certs
+      - /var/nginx/vhost:/etc/nginx/vhost.d
+      - /var/nginx/html:/usr/share/nginx/html
+      - /var/nginx/acme:/etc/acme.sh
+    env:
+      DEFAULT_EMAIL: '{{ email }}'
+      NGINX_PROXY_CONTAINER: nginx
+    networks:
+      - name: docker_net
+  when: use_ssl
 
 - name: Open http(s) ports in firewalld
   tags:
