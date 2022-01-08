@@ -1,0 +1,44 @@
+---
+- name: Change default shell to zsh
+  become: yes
+  user:
+    name: "{{ current_user }}"
+    shell: /bin/zsh
+
+- name: Check if oh-my-zsh is installed
+  shell: '[ -d "$HOME/.oh-my-zsh" ]'
+  register: cmd
+  changed_when: false
+
+- name: Install oh-my-zsh
+  ansible.builtin.shell: |
+    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  when: cmd.rc != 0
+
+- name: Check if custom zsh theme is installed
+  ansible.builtin.shell: |
+    [ -f "$HOME/.oh-my-zsh/themes/magic-af.zsh-theme" ]
+  register: cmd
+  changed_when: false
+
+- name: Install custom zsh theme
+  ansible.builtin.shell: |
+    theme_file="$HOME/.oh-my-zsh/themes/magic-af.zsh-theme"
+    if [ ! -f "$theme_file" ]
+    then
+      curl https://raw.githubusercontent.com/jordanhatcher/magic-af/master/magic-af.zsh-theme \
+        -o "$theme_file"
+    fi
+  when: cmd.rc != 0
+
+- name: Clone dotfiles repo
+  git:
+    repo: https://github.com/jordanhatcher/dotfiles.git
+    dest: /home/{{ current_user }}/git/dotfiles
+  register: cmd
+
+- name: Install the dotfiles
+  ansible.builtin.shell: |
+    cd /home/{{ current_user }}/git/dotfiles/
+    ./setup.sh
+  when: cmd.changed

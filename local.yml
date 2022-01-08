@@ -4,4 +4,4 @@
   vars:
     current_user: "{{ ansible_user_id }}"
   roles:
-    - role: install_packages
+    - role: development_environment

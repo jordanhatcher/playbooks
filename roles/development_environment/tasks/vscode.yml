@@ -1,0 +1,43 @@
+---
+- name: Import vscode GPG key
+  ansible.builtin.rpm_key:
+    state: present
+    key: https://packages.microsoft.com/keys/microsoft.asc
+
+- name: Setup vscode repo
+  ansible.builtin.copy:
+    dest: /etc/yum.repos.d/vscode.repo
+    content: |
+      [code]
+      name=Visual Studio Code
+      baseurl=https://packages.microsoft.com/yumrepos/vscode
+      enabled=1
+      gpgcheck=1
+      gpgkey=https://packages.microsoft.com/keys/microsoft.asc
+  become: yes
+
+- name: Install vscode
+  ansible.builtin.dnf:
+    name: code
+    state: installed
+  become: yes
+
+- name: Get installed vscode extensions
+  ansible.builtin.shell: |
+    code --list-extensions
+  register: vscode_extensions_result
+  changed_when: false
+- set_fact: installed_vscode_extensions={{ vscode_extensions_result.stdout_lines }}
+
+- name: Install vscode extensions
+  ansible.builtin.shell: |
+    code --install-extension {{ item }}
+  when: item not in installed_vscode_extensions
+  with_items:
+    - vscodevim.vim
+    - ms-python.python
+    - redhat.vscode-yaml
+    - daylerees.rainglow
+    - ms-azuretools.vscode-docker
+    - shardulm94.trailing-spaces
+    - redhat.ansible

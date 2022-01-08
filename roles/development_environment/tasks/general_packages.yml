@@ -1,0 +1,15 @@
+---
+- name: Install packages
+  dnf:
+    name:
+      - vim
+      - zsh
+      - jq
+      - keepassxc
+      - gnome-tweak-tool
+      - gstreamer1-plugin-openh264
+      - mozilla-openh264
+      - go
+      - wireguard-tools
+    state: installed
+  become: yes
