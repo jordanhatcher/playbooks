@@ -1,0 +1,22 @@
+---
+- name: Ensure /etc/systemd/logind.conf.d directory exists
+  file:
+    path: /etc/systemd/logind.conf.d
+    state: directory
+  become: yes
+
+- name: Copy logind.conf
+  copy:
+    dest: /etc/systemd/logind.conf.d/clamshell_mode.conf
+    content: |
+      # If connected to a docking station or a display, don't do anything
+      HandleLidSwitchDocked=ignore
+
+      # Else suspend
+      HandleLidSwitchExternalPower=suspend
+      HandleLidSwitch=suspend
+    owner: root
+    group: root
+    mode: '0644'
+  register: result
+  become: yes

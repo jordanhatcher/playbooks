@@ -3,3 +3,4 @@
 - include_tasks: general_packages.yml
 - include_tasks: vscode.yml
 - include_tasks: gpg.yml
+- include_tasks: clamshell_mode.yaml
