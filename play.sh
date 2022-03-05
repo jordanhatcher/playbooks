@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ansible-playbook \
-    -i hosts.yml \
+    -i infrastructure_hosts.yml \
     --ask-vault-pass \
     --ask-become-pass \
     "$@" \

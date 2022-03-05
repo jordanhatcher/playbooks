@@ -1,6 +1,6 @@
 #!/bin/bash
 ansible-playbook \
-    -i hosts.yml \
+    -i local_hosts.yml \
     --ask-become-pass \
     "$@" \
     local.yml
