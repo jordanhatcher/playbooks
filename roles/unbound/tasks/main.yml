@@ -12,6 +12,18 @@
     - unbound
     - dns
   template:
+    src: files/unbound.conf
+    dest: /var/unbound/unbound.conf
+    owner: root
+    group: root
+    mode: '0644'
+    backup: no
+
+- name: Copy A record config
+  tags:
+    - unbound
+    - dns
+  template:
     src: templates/a-records.conf.j2
     dest: '/var/unbound/a-records.conf'
     owner: 'root'
