@@ -5,6 +5,7 @@
   vars_files:
     - secrets.yml
   roles:
+    - role: docker-registry
     - role: monitoring
     - role: unbound
     - role: jellyfin
@@ -12,3 +13,4 @@
     - role: monitored
     - role: transmission
     - role: nextcloud
+    - role: dns-tweak

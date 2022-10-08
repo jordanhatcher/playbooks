@@ -11,6 +11,15 @@
       - python-pip
     state: installed
 
+- name: Allow pulling from local registry
+  copy:
+    dest: /etc/docker/daemon.json
+    content: |
+      {
+        "insecure-registries": [ "sumo.cactusnet:5000" ]
+      }
+  register: docker_daemon_conf
+
 - name: Start and enable docker
   systemd:
     name: docker.service
@@ -32,3 +41,12 @@
 - name: Create a docker network
   docker_network:
     name: docker_net
+    ipam_config:
+      - subnet: '172.18.0.0/16'
+        gateway: '172.18.0.1'
+
+- name: Restart docker
+  service:
+    name: docker.service
+    state: restarted
+  when: docker_daemon_conf.changed

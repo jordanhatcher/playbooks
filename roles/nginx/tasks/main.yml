@@ -54,7 +54,7 @@
       NGINX_PROXY_CONTAINER: nginx
     networks:
       - name: docker_net
-  when: use_ssl
+  when: "{{ use_ssl | default(true) }}"
 
 - name: Open http(s) ports in firewalld
   tags:

@@ -1,0 +1,38 @@
+---
+- name: Create dns-tweak config directory
+  tags:
+    - dns
+  file:
+    path: '/var/dns-tweak/'
+    state: directory
+
+- name: Creates dns-tweak config
+  tags:
+    - dns
+  copy:
+    dest: /var/dns-tweak/config.yaml
+    content: |
+      server:
+        address: 0.0.0.0
+        port: 53
+
+      upstream:
+        address: 172.18.0.10
+
+- name: Update and run the dns-tweak container
+  tags:
+    - dns
+  docker_container:
+    name: dns-tweak
+    image: sumo.cactusnet:5000/dns-tweak
+    pull: yes
+    state: started
+    restart_policy: always
+    network_mode: bridge
+    volumes:
+      '/var/dns-tweak/config.yaml:/etc/dns-tweak/config.yaml'
+    ports:
+      - '{{ dns_tweak_address }}:53:53/tcp'
+      - '{{ dns_tweak_address }}:53:53/udp'
+    networks:
+      - name: docker_net

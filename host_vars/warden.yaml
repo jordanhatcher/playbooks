@@ -1,5 +1,5 @@
 ---
-ansible_host: 192.168.0.11
+ansible_host: 192.168.0.20
 dns_name: warden.cactusnet
 is_rpi: yes
 

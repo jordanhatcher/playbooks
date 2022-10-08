@@ -44,5 +44,17 @@
     volumes:
       '/var/unbound/a-records.conf:/opt/unbound/etc/unbound/a-records.conf'
     ports:
-      - '53:53/tcp'
-      - '53:53/udp'
+      - '127.0.0.1:53:53/tcp'
+      - '127.0.0.1:53:53/udp'
+      - '{{ unbound_address }}:53:53/tcp'
+      - '{{ unbound_address }}:53:53/udp'
+    networks:
+      - name: docker_net
+        ipv4_address: '172.18.0.10'
+
+- name: Wait for unbound to start
+  tags:
+    - unbound
+    - dns
+  pause:
+    seconds: 30

@@ -1,0 +1,22 @@
+---
+- name: Create Docker registry storage directory
+  tags:
+    - docker
+  file:
+    path: '/var/docker-registry'
+    state: directory
+
+- name: Update and run the Docker registry container
+  tags:
+    - docker
+  docker_container:
+    name: registry
+    image: registry
+    pull: yes
+    state: started
+    restart_policy: always
+    volumes:
+      - '/var/docker-registry:/var/lib/registry'
+    ports:
+      - '5000:5000/tcp'
+

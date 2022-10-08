@@ -15,3 +15,9 @@ transmission_download_dir: /var/torrents
 
 # Nextcloud
 nextcloud_host_directory: /data
+
+# Unbound
+unbound_address: 192.168.0.10
+
+# dns-tweak
+dns_tweak_address: 192.168.0.11
